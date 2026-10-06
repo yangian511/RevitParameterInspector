@@ -27,10 +27,18 @@ writer, a family editor, a QA/QC engine, or an AI chatbot.
 | `net48` | 2024 | |
 | `net8.0-windows` | 2025 (default) | |
 | `net8.0-windows` | 2026 | build with `-p:RevitVersion=2026` |
+| `net10.0-windows` | 2027 | build with `-p:RevitVersion=2027`; requires .NET 10 SDK |
 
 Version differences are isolated in `RevitParameterInspector.Revit/Compatibility`. Revit
 install location can be overridden with `-p:RevitInstallDir=...` if Revit is installed outside
 `C:\Program Files\Autodesk\Revit <version>`.
+
+Revit 2027 uses .NET 10 ([Autodesk migration guidance](https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-8D7A4715-EAF8-4BD1-BE78-061F900D0BCE.htm)).
+Its default API location is `C:\Program Files\Autodesk\Revit 2027`. Build with:
+
+```powershell
+dotnet build src/RevitParameterInspector.Revit -f net10.0-windows -p:RevitVersion=2027 -c Release
+```
 
 ## Implementation status
 
@@ -127,8 +135,15 @@ RevitElementBipChecker concept this project modernizes.
 | `net48` | 2024 |  |
 | `net8.0-windows` | 2025 | 預設預期版本 |
 | `net8.0-windows` | 2026 | 建置命令：`-p:RevitVersion=2026` |
+| `net10.0-windows` | 2027 | `-p:RevitVersion=2027`；需要 .NET 10 SDK |
 
 版本之間的差異已隔離在 `RevitParameterInspector.Revit/Compatibility` 中。如果您的 Revit 安裝路徑非預設的 `C:\Program Files\Autodesk\Revit <版本>`，可使用 `-p:RevitInstallDir=...` 來覆寫安裝路徑。
+
+Revit 2027 已改用 .NET 10，預設 API 位置為 `C:\Program Files\Autodesk\Revit 2027`：
+
+```powershell
+dotnet build src/RevitParameterInspector.Revit -f net10.0-windows -p:RevitVersion=2027 -c Release
+```
 
 ## 實作進度 (Implementation status)
 

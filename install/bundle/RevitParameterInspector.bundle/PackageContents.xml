@@ -9,31 +9,41 @@
                      UpgradeCode="{5B1E2E7B-9E6D-4A8C-9B6A-2E7F7B8F9C11}">
   <CompanyDetails Name="RevitParameterInspector Contributors"
                   Url="https://github.com/laytonluo/RevitParameterInspector" />
-  <Components Description="RevitParameterInspector">
-    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2024" SeriesMax="R2026" />
+  <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2024" SeriesMax="R2027" />
+  <Components Description="RevitParameterInspector 2024">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2024" SeriesMax="R2024" />
     <ComponentEntry AppName="RevitParameterInspector"
                     Version="0.3.0"
                     ModuleName="./Contents/2024/RevitParameterInspector.addin"
                     AppDescription="Structured, read-only Revit element context inspector"
                     LoadOnCommandInvocation="false"
-                    LoadOnStartup="true">
-      <Platform SeriesMin="R2024" SeriesMax="R2024" />
-    </ComponentEntry>
+                    LoadOnStartup="true" />
+  </Components>
+  <Components Description="RevitParameterInspector 2025">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2025" SeriesMax="R2025" />
     <ComponentEntry AppName="RevitParameterInspector"
                     Version="0.3.0"
                     ModuleName="./Contents/2025/RevitParameterInspector.addin"
                     AppDescription="Structured, read-only Revit element context inspector"
                     LoadOnCommandInvocation="false"
-                    LoadOnStartup="true">
-      <Platform SeriesMin="R2025" SeriesMax="R2025" />
-    </ComponentEntry>
+                    LoadOnStartup="true" />
+  </Components>
+  <Components Description="RevitParameterInspector 2026">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2026" SeriesMax="R2026" />
     <ComponentEntry AppName="RevitParameterInspector"
                     Version="0.3.0"
                     ModuleName="./Contents/2026/RevitParameterInspector.addin"
                     AppDescription="Structured, read-only Revit element context inspector"
                     LoadOnCommandInvocation="false"
-                    LoadOnStartup="true">
-      <Platform SeriesMin="R2026" SeriesMax="R2026" />
-    </ComponentEntry>
+                    LoadOnStartup="true" />
+  </Components>
+  <Components Description="RevitParameterInspector 2027">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2027" SeriesMax="R2027" />
+    <ComponentEntry AppName="RevitParameterInspector"
+                    Version="0.3.0"
+                    ModuleName="./Contents/2027/RevitParameterInspector.addin"
+                    AppDescription="Structured, read-only Revit element context inspector"
+                    LoadOnCommandInvocation="false"
+                    LoadOnStartup="true" />
   </Components>
 </ApplicationPackage>

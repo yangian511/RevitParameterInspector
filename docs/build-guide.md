@@ -22,18 +22,22 @@ Core/Export/Dictionary/UI logic outside Revit.
 
 `Directory.Build.props` at the repo root applies shared settings to every project:
 `LangVersion=latest`, `Nullable=enable`, `ImplicitUsings=enable`, `Deterministic=true`, and the
-shared `Version`/`RevitParameterInspectorVersion` (currently `0.1.0`).
+shared `Version`/`RevitParameterInspectorVersion` (currently `0.4.5`).
 
 ## Multi-targeting and Revit version resolution
 
-Every project targets both `net48` and `net8.0-windows`. `RevitParameterInspector.Revit.csproj`
-maps those to Revit versions like this:
+The shared projects target `net48` and `net8.0-windows`. The Revit project keeps those
+defaults, and enables `net10.0-windows` when `RevitVersion=2027` is supplied. Its .NET 10
+build references the API-free shared projects' compatible .NET 8 outputs; no UI or export
+behavior changes are needed. Older-version builds do not require the .NET 10 SDK.
+`RevitParameterInspector.Revit.csproj` maps frameworks to Revit versions like this:
 
 | `TargetFramework` | `RevitVersion` property | Resolves to | Define constants |
 |---|---|---|---|
 | `net48` | (ignored) | 2024 | `REVIT2024`, `REVIT2024_OR_GREATER` |
 | `net8.0-windows` | unset | 2025 | `REVIT2025`, `REVIT2024_OR_GREATER`, `REVIT2025_OR_GREATER` |
-| `net8.0-windows` | `2026` | 2026 | `REVIT2026`, `REVIT2024_OR_GREATER`, `REVIT2025_OR_GREATER` |
+| `net8.0-windows` | `2026` | 2026 | `REVIT2026`, `REVIT2024_OR_GREATER`, `REVIT2025_OR_GREATER`, `REVIT2026_OR_GREATER` |
+| `net10.0-windows` | `2027` | 2027 | `REVIT2027`, `REVIT2024_OR_GREATER`, `REVIT2025_OR_GREATER`, `REVIT2026_OR_GREATER`, `REVIT2027_OR_GREATER` |
 
 The resolved version also drives `RevitInstallDir` (default
 `C:\Program Files\Autodesk\Revit <version>`), which is where `RevitAPI.dll`/`RevitAPIUI.dll`
@@ -41,9 +45,14 @@ are picked up (`Private=false`, `SpecificVersion=false`, so they aren't copied t
 Revit provides them at runtime). Version-specific code should branch on the define constants
 inside `RevitParameterInspector.Revit/Compatibility`, not be scattered across builders/readers.
 
+Revit 2027 requires the .NET 10 SDK and APIs from `C:\Program Files\Autodesk\Revit 2027`
+by default. [Autodesk's migration guidance](https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-8D7A4715-EAF8-4BD1-BE78-061F900D0BCE.htm)
+explains the runtime change. `net8.0-windows` with 2027 APIs is unsupported and produces
+assembly-version errors; do not suppress those errors or substitute older API DLLs.
+
 ## Building one target at a time
 
-Always pass `-f` (or `-p:RevitVersion=...`) explicitly - building without it attempts every
+Always pass `-f` and, for 2026/2027, `-p:RevitVersion=...` explicitly - building without `-f` attempts every
 `TargetFramework` in the list, which requires `RevitInstallDir` to resolve for more than one
 Revit version at once:
 
@@ -51,6 +60,7 @@ Revit version at once:
 dotnet build src/RevitParameterInspector.Revit -f net48                                   # 2024
 dotnet build src/RevitParameterInspector.Revit -f net8.0-windows                          # 2025
 dotnet build src/RevitParameterInspector.Revit -f net8.0-windows -p:RevitVersion=2026     # 2026
+dotnet build src/RevitParameterInspector.Revit -f net10.0-windows -p:RevitVersion=2027 -c Release # 2027
 dotnet build src/RevitParameterInspector.Revit -f net8.0-windows -p:RevitInstallDir="D:\Autodesk\Revit 2025"
 ```
 
@@ -84,4 +94,10 @@ building each project independently, and exercising `Core`/`Export`/`UI` logic (
 Revit API dependency) via throwaway console harnesses that construct an `ElementContextSnapshot`
 by hand and feed it through the real exporters/`ObjectInspector`/`MainWindowViewModel`. The
 `RevitParameterInspector.Revit` project itself (builders, readers, the external command) has
-not been exercised inside an actual running Revit instance.
+now been exercised in a controlled Revit 2027 runtime smoke test (see below).
+
+Revit 2027 compilation has been checked against installed API version `27.2.0.0` with SDK
+`10.0.401`. Packaging with `-Versions 2027 -Configuration Release` is also checked.
+The maintainer also reported a successful Revit 2027 runtime smoke test on 2026-10-06, including machine-wide bundle loading and Markdown/XLSX exports. Two MSB3277 reference warnings remain unsuppressed. See
+[revit-version-support.md](revit-version-support.md#current-verification-status) for limits
+and remaining reference warnings.

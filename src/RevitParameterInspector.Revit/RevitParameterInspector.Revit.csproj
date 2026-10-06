@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- net48 => Revit 2024, net8.0-windows => Revit 2025 (default) or 2026 via -p:RevitVersion=2026 -->
+    <!-- net48 => 2024; net8.0-windows => 2025 (default)/2026; net10.0-windows => 2027. -->
     <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
+    <!-- Keep older-version builds usable with the .NET 8 SDK; opt into .NET 10 only for 2027. -->
+    <TargetFrameworks Condition="'$(RevitVersion)'=='2027'">net48;net8.0-windows;net10.0-windows</TargetFrameworks>
     <RootNamespace>RevitParameterInspector.Revit</RootNamespace>
     <AssemblyName>RevitParameterInspector.Revit</AssemblyName>
     <GenerateDependencyFile>false</GenerateDependencyFile>
@@ -29,6 +31,9 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-windows' AND '$(RevitVersion)'!=''">
     <EffectiveRevitVersion>$(RevitVersion)</EffectiveRevitVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net10.0-windows'">
+    <EffectiveRevitVersion>2027</EffectiveRevitVersion>
+  </PropertyGroup>
 
   <PropertyGroup Condition="'$(EffectiveRevitVersion)'=='2024'">
     <DefineConstants>$(DefineConstants);REVIT2024;REVIT2024_OR_GREATER</DefineConstants>
@@ -37,8 +42,16 @@
     <DefineConstants>$(DefineConstants);REVIT2025;REVIT2024_OR_GREATER;REVIT2025_OR_GREATER</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(EffectiveRevitVersion)'=='2026'">
-    <DefineConstants>$(DefineConstants);REVIT2026;REVIT2024_OR_GREATER;REVIT2025_OR_GREATER</DefineConstants>
+    <DefineConstants>$(DefineConstants);REVIT2026;REVIT2024_OR_GREATER;REVIT2025_OR_GREATER;REVIT2026_OR_GREATER</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(EffectiveRevitVersion)'=='2027'">
+    <DefineConstants>$(DefineConstants);REVIT2027;REVIT2024_OR_GREATER;REVIT2025_OR_GREATER;REVIT2026_OR_GREATER;REVIT2027_OR_GREATER</DefineConstants>
+  </PropertyGroup>
+
+  <Target Name="ValidateRevit2027TargetFramework" BeforeTargets="PrepareForBuild;ResolveReferences"
+          Condition="'$(EffectiveRevitVersion)'=='2027' AND '$(TargetFramework)'!='net10.0-windows'">
+    <Error Text="Revit 2027 requires net10.0-windows. Build with -f net10.0-windows -p:RevitVersion=2027." />
+  </Target>
 
   <!-- Override with an environment variable or -p:RevitInstallDir=... if Revit is installed elsewhere. -->
   <PropertyGroup Condition="'$(RevitInstallDir)'==''">
