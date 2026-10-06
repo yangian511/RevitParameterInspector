@@ -94,10 +94,10 @@ building each project independently, and exercising `Core`/`Export`/`UI` logic (
 Revit API dependency) via throwaway console harnesses that construct an `ElementContextSnapshot`
 by hand and feed it through the real exporters/`ObjectInspector`/`MainWindowViewModel`. The
 `RevitParameterInspector.Revit` project itself (builders, readers, the external command) has
-not been exercised inside an actual running Revit instance.
+now been exercised in a controlled Revit 2027 runtime smoke test (see below).
 
 Revit 2027 compilation has been checked against installed API version `27.2.0.0` with SDK
 `10.0.401`. Packaging with `-Versions 2027 -Configuration Release` is also checked.
-This does not verify loading or behavior inside Revit. See
+The maintainer also reported a successful Revit 2027 runtime smoke test on 2026-10-06, including machine-wide bundle loading and Markdown/XLSX exports. Two MSB3277 reference warnings remain unsuppressed. See
 [revit-version-support.md](revit-version-support.md#current-verification-status) for limits
 and remaining reference warnings.

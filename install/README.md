@@ -79,3 +79,17 @@ build output, not source - they're excluded via `.gitignore` (only the `.addin` 
 - Distributing to others, or running multiple Revit versions on the same machine: `bundle/`.
 
 Neither is wired into a CI/release pipeline yet - see `docs/roadmap.md`.
+
+## Verified Revit 2027 installation
+
+On 2026-10-06, the maintainer confirmed both per-user manifest loading and machine-wide
+bundle loading in actual Revit 2027. The verified bundle directory is
+`C:\Program Files\Autodesk\ApplicationPlugins\RevitParameterInspector.bundle`.
+A bundle under `C:\ProgramData\Autodesk\ApplicationPlugins\` is not discovered by Revit 2027.
+Keep the existing ProgramData installation for Revit 2024-2026.
+
+Revit 2027 uses `net10.0-windows` with `RevitVersion=2027`. Ribbon, Inspector, Summary,
+parameter reading, AI Context, Markdown/XLSX exports and Chinese names passed; see
+[verification status](../docs/revit-version-support.md#current-verification-status) for the
+full scope and the two retained MSB3277 warnings. Use only one active registration method
+per version.
