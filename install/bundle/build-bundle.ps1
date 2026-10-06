@@ -10,7 +10,7 @@
     see docs/build-guide.md and docs/revit-version-support.md.
 
 .PARAMETER Versions
-    Which Revit versions to build. Defaults to all three supported versions.
+    Which Revit versions to build. Defaults to all four supported versions.
 
 .PARAMETER Configuration
     Build configuration (Debug/Release). Defaults to Release.
@@ -18,10 +18,11 @@
 .EXAMPLE
     ./install/bundle/build-bundle.ps1
     ./install/bundle/build-bundle.ps1 -Versions 2025,2026 -Configuration Debug
+    ./install/bundle/build-bundle.ps1 -Versions 2027 -Configuration Release
 #>
 param(
-    [ValidateSet(2024, 2025, 2026)]
-    [int[]] $Versions = @(2024, 2025, 2026),
+    [ValidateSet(2024, 2025, 2026, 2027)]
+    [int[]] $Versions = @(2024, 2025, 2026, 2027),
 
     [ValidateSet('Debug', 'Release')]
     [string] $Configuration = 'Release'
@@ -35,6 +36,7 @@ $bundleContents = Join-Path $PSScriptRoot 'RevitParameterInspector.bundle\Conten
 
 function Get-TargetFramework([int] $version) {
     if ($version -eq 2024) { return 'net48' }
+    if ($version -eq 2027) { return 'net10.0-windows' }
     return 'net8.0-windows'
 }
 
@@ -43,8 +45,8 @@ foreach ($version in $Versions) {
     Write-Host "==> Building for Revit $version ($tfm, $Configuration)" -ForegroundColor Cyan
 
     $buildArgs = @($revitProject, '-c', $Configuration, '-f', $tfm)
-    if ($version -eq 2026) {
-        $buildArgs += '-p:RevitVersion=2026'
+    if ($version -ge 2026) {
+        $buildArgs += "-p:RevitVersion=$version"
     }
 
     & dotnet build @buildArgs
@@ -77,4 +79,5 @@ foreach ($version in $Versions) {
 }
 
 Write-Host "==> Done. RevitParameterInspector.bundle is ready under $(Split-Path $bundleContents -Parent)." -ForegroundColor Green
-Write-Host "    Copy that .bundle folder to %ProgramData%\Autodesk\ApplicationPlugins\ to install it."
+Write-Host "    Revit 2024-2026: copy the .bundle to %ProgramData%\Autodesk\ApplicationPlugins\."
+Write-Host "    Revit 2027: copy the .bundle to %ProgramFiles%\Autodesk\ApplicationPlugins\ (administrator required)."
